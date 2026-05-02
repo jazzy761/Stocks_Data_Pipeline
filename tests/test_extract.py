@@ -14,7 +14,7 @@ MOCK_RESPONSE = {
 
 @patch("ingestion.extract.requests.get")
 def test_fetch_returns_dataframe(mock_get):
-    mock_get = return_value = MagicMock(
+    mock_get.return_value = MagicMock(
         status_code = 200,
         json = lambda: MOCK_RESPONSE
     )
