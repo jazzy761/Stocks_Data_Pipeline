@@ -6,3 +6,4 @@ services:
       - .env          # loads your API key automatically
     volumes:
       - .:/app        # live code reload — edit locally, runs in container
+      - ./gcp-key.json:/app/gcp-key.json
