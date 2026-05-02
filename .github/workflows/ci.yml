@@ -25,4 +25,5 @@ jobs:
       - name: Run tests
         env:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/ -v
