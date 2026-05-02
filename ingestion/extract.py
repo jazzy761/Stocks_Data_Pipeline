@@ -25,6 +25,7 @@ def fetch_daily_stock(symbol : str) -> pd.DataFrame:
     time_series = data.get("Time Series (Daily)", {})
 
     if not time_series:
+        print(f"Raw API response for {symbol}: {data}")
         raise ValueError(f"No data returned for {symbol}. Check your API key or symbol.")
         
     df = pd.DataFrame.from_dict(time_series , orient='index')
