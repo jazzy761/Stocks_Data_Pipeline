@@ -31,4 +31,4 @@ def test_label_balance():
 
 def test_model_exists():
     """confirm model was saved"""
-    assert os.path.exists("ModelTraining/saved_model/lstm_stock.h5"), "Model file missing"
+    assert os.path.exists("ModelTraining/lstm_stock.h5"), "Model file missing"
