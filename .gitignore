@@ -3,5 +3,5 @@ __pycache__/
 *.pyc
 .pytest_cache/
 gcp-key.json
-ml/data/
-ml/saved_model/
+ModelTraining/data/
+ModelTraining/saved_model/
