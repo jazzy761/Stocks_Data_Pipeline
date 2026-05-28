@@ -4,6 +4,4 @@ python-dotenv
 google-cloud-bigquery
 db-dtypes
 pandas-gbq 
-tensorflow
-scikit-learn
 matplotlib

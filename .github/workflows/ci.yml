@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 jobs:
+  # ── existing: ETL tests ───────────────────────────────────────────────────────
   test:
     runs-on: ubuntu-latest
 
@@ -27,7 +28,7 @@ jobs:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
           PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/ -v
-
+  # ── existing: run ETL pipeline ───────────────────────────────────────────────
   run-pipline:
     runs-on: ubuntu-latest
     needs : test
@@ -57,3 +58,76 @@ jobs:
           BQ_TABLE: ${{ secrets.BQ_TABLE }}
           PYTHONPATH: ${{ github.workspace }}
         run: python ingestion/pipeline.py
+  # ── new: generate features ────────────────────────────────────────────────────
+
+  features:
+    runs-on: ubuntu-latest
+    needs: run-pipline
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: "python 3.8.18"
+
+      - name: Install dependencies
+        run: pip install -r ModelTraining/requirements.txt 
+
+      - name: Authenticate to GCP 
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      
+      - name: Generate features
+        env: 
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          BQ_DATASET: ${{ secrets.BQ_DATASET }}
+          BQ_TABLE: ${{ secrets.BQ_TABLE }}
+          PYTHONPATH: ${{ github.workspace }}
+        run: python ModelTraining/features.py
+
+      - name: Upload features files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-sequences
+          path: ModelTraining/data/
+          retention-days: 1 
+
+  # ── new: train model + run ML tests ──────────────────────────────────────────
+
+  ml-train:
+    runs-on: ubuntu-latest
+    needs: features
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "python 3.8.18"
+
+      - name: Install ML dependencies
+        run: pip install -r ModelTraining/requirements.txt pytest
+
+      - name: Download features files
+        uses: actions/download-artifact@v4
+        with:
+          name: ml-sequences
+          path: ModelTraining/data/
+
+      - name: Train Model
+        env:
+           PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/test_model.py -v
+
+      - name: Upload trained model
+        uses: actions/upload-artifact@v4
+        with: 
+          name: trained-model
+          path: ModelTraining/
+          retention-days: 1
