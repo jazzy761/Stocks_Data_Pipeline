@@ -120,7 +120,12 @@ jobs:
           name: ml-sequences
           path: ModelTraining/data/
 
-      - name: Train Model
+      - name: Train Model 
+        env: 
+          PYTHONPATH: ${{ github.workspace}}
+        run: python ModelTraining/model.py
+
+      - name: Run ML tests
         env:
            PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/test_model.py -v
