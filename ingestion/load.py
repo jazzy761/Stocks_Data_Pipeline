@@ -30,7 +30,7 @@ def load_to_bigquery(df):
     table_ref = f"{PROJECT_ID}.{DATASET}.{TABLE}"
     
     job_config = bigquery.LoadJobConfig(
-        write_disposition = "WRITE_APPEND",
+        write_disposition = "WRITE_TRUNCATE",
         autodetect = True
     )
     
