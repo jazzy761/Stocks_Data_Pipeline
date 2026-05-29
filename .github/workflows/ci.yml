@@ -112,7 +112,7 @@ jobs:
           python-version: "3.8.18"
 
       - name: Install ML dependencies
-        run: pip install -r ModelTraining/requirements.txt pytest
+        run: pip install -r ModelTraining/requirements.txt pytest --use-deprecated=legacy-resolver
 
       - name: Download features files
         uses: actions/download-artifact@v4
